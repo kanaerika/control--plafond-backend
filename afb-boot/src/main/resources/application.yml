@@ -1,0 +1,65 @@
+server:
+  port: ${PORT:8081}
+  error:
+    include-message: always
+
+spring:
+  application:
+    name: transfer-platform
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/transfer_db}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:erika}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: ${DDL_AUTO:update}
+    show-sql: ${SHOW_SQL:true}
+    open-in-view: false
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # Identifiant technique du realm : "afriland" (le nom d'affichage Keycloak
+          # reste "AFRILAND FIRST BANK", cf. keycloak/realm-export.json). Un espace
+          # littéral dans l'ID technique casse la validation du claim "iss" par Spring.
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8080/realms/afriland}
+
+app:
+  frontend-url: ${FRONTEND_URL:http://localhost:4200}
+
+  email:
+    provider: ${EMAIL_PROVIDER:console}
+    from: ${MAIL_USERNAME:}
+
+  plafond-mensuel: ${PLAFOND_MENSUEL:1000000}
+
+  sms:
+    provider: ${SMS_PROVIDER:console}
+
+  jwt:
+    secret: ${JWT_SECRET:changer-cette-cle-secrete-de-64-caracteres-minimum-en-production!!}
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+
+springdoc:
+  api-docs:
+    enabled: ${SWAGGER_ENABLED:true}
+
+  swagger-ui:
+    enabled: ${SWAGGER_ENABLED:true}
+    path: /swagger-ui.html

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.afb</groupId>
+        <artifactId>transfer-platform</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>afb-boot</artifactId>
+    <name>afb-boot</name>
+    <description>Point d'entrée : assemble tous les modules et produit le jar exécutable.</description>
+
+    <!--
+      Le module d'assemblage dépend de l'infrastructure (qui tire application,
+      qui tire domain). C'est le SEUL module qui produit un exécutable Spring Boot.
+    -->
+    <dependencies>
+        <dependency>
+            <groupId>com.afb</groupId>
+            <artifactId>afb-infrastructure</artifactId>
+        </dependency>
+    </dependencies>
+    
+
+    <build>
+        <plugins>
+            <!-- Ici, le plugin Spring Boot est ACTIF (pas de skip) : il crée le jar exécutable -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

@@ -1,0 +1,72 @@
+{
+  "realm": "afriland",
+  "displayName": "AFRILAND FIRST BANK",
+  "displayNameHtml": "<strong>AFRILAND FIRST BANK</strong>",
+  "enabled": true,
+  "sslRequired": "external",
+  "registrationAllowed": false,
+  "resetPasswordAllowed": true,
+  "accessTokenLifespan": 300,
+  "ssoSessionIdleTimeout": 1800,
+  "ssoSessionMaxLifespan": 36000,
+
+  "roles": {
+    "realm": [
+      { "name": "ADMIN", "description": "Administrateur : accès complet, gestion des partenaires" },
+      { "name": "AGENT", "description": "Agent opérant pour un partenaire : consultation/exécution des transferts" }
+    ]
+  },
+
+  "clients": [
+    {
+      "clientId": "afb-frontend",
+      "name": "AFB Transfert - Frontend Angular",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "implicitFlowEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [ "http://localhost:4200/*" ],
+      "webOrigins": [ "http://localhost:4200" ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      }
+    },
+    {
+      "clientId": "afb-backend",
+      "name": "AFB Transfert - Backend (resource server)",
+      "enabled": true,
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "bearerOnly": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false
+    }
+  ],
+
+  "users": [
+    {
+      "username": "admin.test",
+      "email": "admin.test@afriland.local",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        { "type": "password", "value": "ChangeMe123!", "temporary": true }
+      ],
+      "realmRoles": [ "ADMIN" ]
+    },
+    {
+      "username": "agent.test",
+      "email": "agent.test@afriland.local",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        { "type": "password", "value": "ChangeMe123!", "temporary": true }
+      ],
+      "realmRoles": [ "AGENT" ]
+    }
+  ]
+}
