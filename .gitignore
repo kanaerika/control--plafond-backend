@@ -1,0 +1,7 @@
+# Secrets locaux — ne doivent jamais entrer dans l'historique git
+lancer-backend.cmd
+application-local.yml
+*.env
+
+# Build
+target/

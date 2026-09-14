@@ -40,5 +40,21 @@ public class AgentController {
         return Map.of("message", gererAgents.supprimer(id));
     }
 
+    @PostMapping("/{id}/invitation")
+    public Map<String, String> renvoyerInvitation(@PathVariable Long id) {
+        return Map.of("message", gererAgents.renvoyerInvitation(id));
+    }
+
+    @PostMapping("/{id}/reinitialisation")
+    public Map<String, String> reinitialiser(@PathVariable Long id) {
+        return Map.of("message", gererAgents.reinitialiser(id));
+    }
+
+    @PostMapping
+public AgentResultat creer(@RequestBody CreerAgentRequete r) {
+    return gererAgents.creer(new com.afb.application.agent.port.in.CreerAgentCommande(
+            r.nomComplet(), r.email(), r.agence(), r.codeAgent()));
+}
+    public record CreerAgentRequete(String nomComplet, String email, String agence, String codeAgent) {}
     public record ModifierAgentRequete(String nomComplet, String agence, String codeAgent) {}
 }

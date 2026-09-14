@@ -5,5 +5,6 @@ import java.util.List;
 
 public interface AgentJpaRepository extends JpaRepository<AgentJpaEntity, Long> {
     boolean existsByEmailIgnoreCase(String email);
+    java.util.Optional<AgentJpaEntity> findByEmailIgnoreCase(String email);
     List<AgentJpaEntity> findByPartenaireIdOrderByNomComplet(Long partenaireId);
 }

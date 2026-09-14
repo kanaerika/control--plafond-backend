@@ -19,17 +19,28 @@ spring:
     show-sql: ${SHOW_SQL:true}
     open-in-view: false
 
+  # SMTP de la plateforme : c'est l'application qui envoie les invitations
+  # (voir EmailAdapter), Keycloak n'a plus besoin d'un SMTP configuré.
+  # Le mot de passe n'est JAMAIS écrit ici : renseigner MAIL_PASSWORD dans
+  # l'environnement du processus (voir lancer-backend.cmd, non versionné).
+  # Préfixe AFB_ délibéré : des variables MAIL_USERNAME / MAIL_PASSWORD
+  # résiduelles traînent dans l'environnement Windows de postes de dev et
+  # détournaient silencieusement l'authentification vers un autre compte.
   mail:
-    host: smtp.gmail.com
-    port: 587
-    username: ${MAIL_USERNAME:}
-    password: ${MAIL_PASSWORD:}
+    host: ${AFB_MAIL_HOST:smtp.office365.com}
+    port: ${AFB_MAIL_PORT:587}
+    username: ${AFB_MAIL_USERNAME:agent_dri_03@afrilandfirstbank.com}
+    password: ${AFB_MAIL_PASSWORD:}
     properties:
       mail:
         smtp:
           auth: true
           starttls:
             enable: true
+            required: true
+          connectiontimeout: 10000
+          timeout: 10000
+          writetimeout: 10000
 
   security:
     oauth2:
@@ -40,12 +51,25 @@ spring:
           # littéral dans l'ID technique casse la validation du claim "iss" par Spring.
           issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8080/realms/afriland}
 
+# Client de service Keycloak (grant client_credentials) utilisé par le backend
+# pour provisionner les agents via l'API Admin : création d'utilisateur, rôle
+# AGENT, email « définir le mot de passe ». Voir KEYCLOAK_CLIENT_CONFIG.md.
+# Le secret provient de l'onglet Credentials du client afriland-backend-admin
+# et n'est JAMAIS commité : renseigner KEYCLOAK_ADMIN_CLIENT_SECRET.
+keycloak:
+  admin:
+    server-url: ${KEYCLOAK_ADMIN_SERVER_URL:http://localhost:8080}
+    realm: ${KEYCLOAK_ADMIN_REALM:afriland}
+    client-id: ${KEYCLOAK_ADMIN_CLIENT_ID:afriland-backend-admin}
+    client-secret: ${KEYCLOAK_ADMIN_CLIENT_SECRET:}
+    role-agent: ${KEYCLOAK_ADMIN_ROLE_AGENT:AGENT}
+
 app:
   frontend-url: ${FRONTEND_URL:http://localhost:4200}
 
   email:
-    provider: ${EMAIL_PROVIDER:console}
-    from: ${MAIL_USERNAME:}
+    from: ${AFB_MAIL_FROM:agent_dri_03@afrilandfirstbank.com}
+    from-name: ${AFB_MAIL_FROM_NAME:Afriland First Bank}
 
   plafond-mensuel: ${PLAFOND_MENSUEL:1000000}
 

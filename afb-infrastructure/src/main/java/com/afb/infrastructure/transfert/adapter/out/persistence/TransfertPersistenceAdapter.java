@@ -1,10 +1,13 @@
 package com.afb.infrastructure.transfert.adapter.out.persistence;
 
+import com.afb.domain.transfert.model.StatutTransfert;
 import com.afb.domain.transfert.model.Transfert;
 import com.afb.domain.transfert.port.out.TransfertRepositoryPort;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 @Component
 public class TransfertPersistenceAdapter implements TransfertRepositoryPort {
@@ -36,6 +39,41 @@ public class TransfertPersistenceAdapter implements TransfertRepositoryPort {
                 .map(TransfertPersistenceAdapter::versDomaine).orElse(null);
     }
 
+    @Override
+    public Optional<Transfert> trouverParId(Long id) {
+        return jpa.findById(id).map(TransfertPersistenceAdapter::versDomaine);
+    }
+
+    @Override
+    public List<Transfert> listerParAgent(Long agentId) {
+        return jpa.findByAgentIdOrderByIdDesc(agentId).stream()
+                .map(TransfertPersistenceAdapter::versDomaine).toList();
+    }
+
+    @Override
+    public List<Transfert> listerParPartenaire(Long partenaireId) {
+        return jpa.findByPartenaireIdOrderByIdDesc(partenaireId).stream()
+                .map(TransfertPersistenceAdapter::versDomaine).toList();
+    }
+
+    @Override
+    public List<Transfert> listerParPartenaireEtStatut(Long partenaireId, StatutTransfert statut) {
+        return jpa.findByPartenaireIdAndStatutOrderByIdDesc(partenaireId, statut).stream()
+                .map(TransfertPersistenceAdapter::versDomaine).toList();
+    }
+
+    @Override
+    public List<Transfert> rechercherClientsConnus(String recherche, Long partenaireId) {
+        return jpa.rechercherClientsConnus(recherche, partenaireId).stream()
+                .map(TransfertPersistenceAdapter::versDomaine)
+                .toList();
+    }
+    
+    @Override
+public List<Transfert> listerParAgentEtJour(Long agentId, java.time.LocalDate jour) {
+    return jpa.findByAgentIdAndDateTransfertOrderByIdDesc(agentId, jour).stream()
+            .map(TransfertPersistenceAdapter::versDomaine).toList();
+}
     private static Transfert versDomaine(TransfertJpaEntity e) {
         Transfert t = new Transfert();
         t.setId(e.getId());

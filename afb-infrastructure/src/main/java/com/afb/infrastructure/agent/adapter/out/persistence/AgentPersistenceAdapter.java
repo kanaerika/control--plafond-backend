@@ -1,7 +1,9 @@
 package com.afb.infrastructure.agent.adapter.out.persistence;
 
+import com.afb.domain.agent.exception.AgentAvecHistorique;
 import com.afb.domain.agent.model.Agent;
 import com.afb.domain.agent.port.out.AgentRepositoryPort;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -28,6 +30,11 @@ public class AgentPersistenceAdapter implements AgentRepositoryPort {
     }
 
     @Override
+    public Optional<Agent> trouverParEmail(String email) {
+        return jpa.findByEmailIgnoreCase(email).map(AgentPersistenceAdapter::versDomaine);
+    }
+
+    @Override
     public boolean existeParEmail(String email) {
         return jpa.existsByEmailIgnoreCase(email);
     }
@@ -41,9 +48,28 @@ public class AgentPersistenceAdapter implements AgentRepositoryPort {
         return versDomaine(jpa.save(e));
     }
 
+    /**
+     * Le flush force la contrainte de clé étrangère à se déclencher ici plutôt
+     * qu'au commit : sans lui, la violation remonterait après la sortie du cas
+     * d'usage et le message SQL brut de Postgres finirait à l'écran.
+     */
     @Override
     public void supprimer(Agent agent) {
-        jpa.deleteById(agent.getId());
+        try {
+            jpa.deleteById(agent.getId());
+            jpa.flush();
+        } catch (DataIntegrityViolationException e) {
+            throw new AgentAvecHistorique(agent.getNomComplet(), e);
+        }
+    }
+
+    @Override
+    public void marquerInvitationAcceptee(String email) {
+        jpa.findByEmailIgnoreCase(email).ifPresent(e -> {
+            e.setInvitationAcceptee(true);
+            e.setFirstLogin(false);
+            jpa.save(e);
+        });
     }
 
     private static Agent versDomaine(AgentJpaEntity e) {
