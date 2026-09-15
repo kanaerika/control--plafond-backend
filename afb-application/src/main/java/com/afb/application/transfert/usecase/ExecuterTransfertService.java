@@ -7,6 +7,7 @@ import com.afb.domain.transfert.exception.StatutTransfertInvalide;
 import com.afb.domain.transfert.model.StatutTransfert;
 import com.afb.domain.transfert.model.Transfert;
 import com.afb.domain.transfert.model.ValidationPiece;
+import com.afb.domain.transfert.model.ValidationTransfert;
 import com.afb.domain.transfert.port.out.CompteurJournalierPort;
 import com.afb.domain.transfert.port.out.PlafondPort;
 import com.afb.domain.transfert.port.out.TransfertRepositoryPort;
@@ -47,10 +48,12 @@ public class ExecuterTransfertService implements ExecuterTransfertUseCase {
     @Transactional
     public VerificationResultat executer(ExecutionCommande cmd) {
         String nomClient = normaliser(cmd.nomClient());
+        ValidationTransfert.valider(nomClient, cmd.montant(), cmd.paysDestination());
+        String dateNaissance = ValidationTransfert.normaliserDateNaissance(cmd.dateNaissance());
         ValidationPiece.valider(cmd.naturePiece(), cmd.numeroPiece());
 
         long plafond = plafondPort.plafondMensuel();
-        long cumul = cumulDuMois(nomClient, cmd.numeroPiece(), cmd.dateNaissance());
+        long cumul = cumulDuMois(nomClient, cmd.numeroPiece(), dateNaissance);
 
         // Recontrôle du plafond avant exécution (comme l'ancien backend)
         if (cmd.montant() > plafond - cumul) {
@@ -59,7 +62,7 @@ public class ExecuterTransfertService implements ExecuterTransfertUseCase {
 
         Transfert t = new Transfert();
         t.setNomClient(nomClient);
-        t.setDateNaissance(cmd.dateNaissance().trim());
+        t.setDateNaissance(dateNaissance);
         t.setNaturePiece(cmd.naturePiece());
         t.setNumeroPiece(cmd.numeroPiece().trim());
         t.setMontant(cmd.montant());

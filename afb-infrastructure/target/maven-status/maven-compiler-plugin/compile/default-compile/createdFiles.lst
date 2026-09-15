@@ -1,4 +1,5 @@
 com\afb\infrastructure\transfert\adapter\out\persistence\CompteurJournalierAdapter.class
+com\afb\infrastructure\agent\adapter\out\invitation\KeycloakInvitationAdapter$1.class
 com\afb\infrastructure\profil\adapter\in\web\ProfilController$ModifierRequete.class
 com\afb\infrastructure\statistique\adapter\out\persistence\StatistiquesAdapter.class
 com\afb\infrastructure\referentiel\adapter\in\web\ReferentielController$ReferentielResponse.class
@@ -6,6 +7,7 @@ com\afb\infrastructure\partenaire\adapter\in\web\PartenaireController$CreerParte
 com\afb\infrastructure\agent\adapter\in\web\AgentController.class
 com\afb\infrastructure\partenaire\adapter\out\persistence\PartenairePersistenceAdapter.class
 com\afb\infrastructure\agent\adapter\out\persistence\AgentJpaRepository.class
+com\afb\infrastructure\securite\CompteActifFilter.class
 com\afb\infrastructure\agent\adapter\out\invitation\KeycloakInvitationAdapter.class
 com\afb\infrastructure\profil\adapter\in\web\ProfilController$ProfilResponse.class
 com\afb\infrastructure\transfert\adapter\in\web\TransfertController$MotifRequete.class

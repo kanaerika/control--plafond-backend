@@ -2,6 +2,7 @@ package com.afb.application.transfert.usecase;
 
 import com.afb.application.transfert.port.in.ConsulterPlafondClientUseCase;
 import com.afb.application.transfert.port.in.PlafondClientResultat;
+import com.afb.domain.transfert.model.ValidationTransfert;
 import com.afb.domain.transfert.port.out.PlafondPort;
 import com.afb.domain.transfert.port.out.TransfertRepositoryPort;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,10 @@ public class ConsulterPlafondClientService implements ConsulterPlafondClientUseC
     public PlafondClientResultat pour(String nomClient, String numeroPiece, String dateNaissance) {
         String nom = normaliser(nomClient);
         long plafond = plafondPort.plafondMensuel();
-        long cumul = cumulDuMois(nom, numeroPiece, dateNaissance);
+        // Même normalisation qu'à l'enregistrement, sinon le cumul affiché ne
+        // retrouverait pas les transferts du client.
+        long cumul = cumulDuMois(nom, numeroPiece,
+                ValidationTransfert.normaliserDateNaissance(dateNaissance));
         return new PlafondClientResultat(cumul, plafond, cumul >= plafond);
     }
 

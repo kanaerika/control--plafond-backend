@@ -24,6 +24,8 @@ public class ConsulterStatistiquesService implements ConsulterStatistiquesUseCas
     private static final String C_ROUGE = "#C8102E";
     private static final String C_ORANGE = "#E08A00";
     private static final String C_BLEU = "#1F6FEB";
+    private static final String C_VIOLET = "#7C4DBC";
+    private static final String C_GRIS = "#6B7280";
 
     private final StatistiquesPort stats;
     private final UtilisateurCourantPort utilisateur;
@@ -47,13 +49,17 @@ public class ConsulterStatistiquesService implements ConsulterStatistiquesUseCas
 
     private Reponse partenaire() {
         Long pid = utilisateur.partenaireIdCourant();
-        long transfertsPartenaire = stats.compterParPartenaire(pid);
+        List<Object[]> parStatut = stats.repartitionParStatutPartenaire(pid);
 
+        // Libellés lus tels quels par le tableau de bord : ne pas les renommer
+        // sans modifier dashboard.component.ts.
         List<Kpi> kpis = List.of(
-                new Kpi("Transferts", transfertsPartenaire, "principal")
+                new Kpi("Agents", stats.compterAgentsPartenaire(pid), "info"),
+                new Kpi("Transferts", total(parStatut), "principal"),
+                new Kpi("Bloqués", compte(parStatut, "REFUSE_PLAFOND"), "attention")
         );
         return new Reponse("PARTENAIRE", kpis,
-                repartition(stats.repartitionParStatutPartenaire(pid)),
+                repartition(parStatut),
                 evolution(stats.parMoisPartenaire(pid, douzeMoisAvant())),
                 classement(stats.topAgents(pid, 5)),
                 activite(stats.activiteRecentePartenaire(pid)));
@@ -82,9 +88,16 @@ public class ConsulterStatistiquesService implements ConsulterStatistiquesUseCas
     }
 
     private Reponse plateforme() {
-        List<Kpi> kpis = List.of(); // à enrichir si besoin
+        List<Object[]> parStatut = stats.repartitionParStatutPlateforme();
+        // Laissée vide, cette liste affichait trois cartes sans chiffre sur le
+        // tableau de bord d'Afriland.
+        List<Kpi> kpis = List.of(
+                new Kpi("Agents", stats.compterAgentsPlateforme(), "info"),
+                new Kpi("Transferts", total(parStatut), "principal"),
+                new Kpi("Bloqués", compte(parStatut, "REFUSE_PLAFOND"), "attention")
+        );
         return new Reponse("PLATEFORME", kpis,
-                repartition(stats.repartitionParStatutPlateforme()),
+                repartition(parStatut),
                 evolution(stats.parMoisPlateforme(douzeMoisAvant())),
                 classement(stats.topPartenaires(5)),
                 activite(stats.activiteRecentePlateforme()));
@@ -102,11 +115,26 @@ public class ConsulterStatistiquesService implements ConsulterStatistiquesUseCas
             map.put(String.valueOf(l[0]), ((Number) l[1]).longValue());
         }
         List<Part> parts = new ArrayList<>();
+        // Tous les statuts : il manquait « Non clôturé » et « Refusé (plafond) »,
+        // si bien que la répartition ne totalisait pas le nombre de transferts.
         parts.add(new Part("Exécutés", map.getOrDefault("EXECUTE", 0L), C_VERT));
+        parts.add(new Part("Non clôturés", map.getOrDefault("NON_CLOTURE", 0L), C_VIOLET));
         parts.add(new Part("En cours", map.getOrDefault("EN_COURS", 0L), C_BLEU));
         parts.add(new Part("Annulés", map.getOrDefault("ANNULE", 0L), C_ORANGE));
         parts.add(new Part("Rejetés", map.getOrDefault("REJETE", 0L), C_ROUGE));
+        parts.add(new Part("Refusés (plafond)", map.getOrDefault("REFUSE_PLAFOND", 0L), C_GRIS));
         return parts;
+    }
+
+    private static long total(List<Object[]> lignesParStatut) {
+        return lignesParStatut.stream().mapToLong(l -> ((Number) l[1]).longValue()).sum();
+    }
+
+    private static long compte(List<Object[]> lignesParStatut, String statut) {
+        return lignesParStatut.stream()
+                .filter(l -> statut.equals(String.valueOf(l[0])))
+                .mapToLong(l -> ((Number) l[1]).longValue())
+                .sum();
     }
 
     private List<PointTemporel> evolution(List<Object[]> lignes) {

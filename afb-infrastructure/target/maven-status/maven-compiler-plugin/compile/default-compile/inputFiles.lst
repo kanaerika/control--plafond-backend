@@ -21,12 +21,13 @@ C:\Users\user\Desktop\first tranfer\controle plafond\afb-infrastructure\src\main
 C:\Users\user\Desktop\first tranfer\controle plafond\afb-infrastructure\src\main\java\com\afb\infrastructure\partenaire\adapter\out\persistence\PartenairePersistenceAdapter.java
 C:\Users\user\Desktop\first tranfer\controle plafond\afb-infrastructure\src\main\java\com\afb\infrastructure\profil\adapter\in\web\ProfilController.java
 C:\Users\user\Desktop\first tranfer\controle plafond\afb-infrastructure\src\main\java\com\afb\infrastructure\referentiel\adapter\in\web\ReferentielController.java
+C:\Users\user\Desktop\first tranfer\controle plafond\afb-infrastructure\src\main\java\com\afb\infrastructure\securite\CompteActifFilter.java
 C:\Users\user\Desktop\first tranfer\controle plafond\afb-infrastructure\src\main\java\com\afb\infrastructure\securite\KeycloakRoleConverter.java
 C:\Users\user\Desktop\first tranfer\controle plafond\afb-infrastructure\src\main\java\com\afb\infrastructure\securite\SecuriteCourantJwtAdapter.java
 C:\Users\user\Desktop\first tranfer\controle plafond\afb-infrastructure\src\main\java\com\afb\infrastructure\securite\SecurityConfig.java
-C:\Users\user\Desktop\first tranfer\controle plafond\afb-infrastructure\src\main\java\com\afb\infrastructure\statistiques\adapter\in\web\StatistiquesController.java
-C:\Users\user\Desktop\first tranfer\controle plafond\afb-infrastructure\src\main\java\com\afb\infrastructure\statistiques\adapter\out\persistence\StatistiquesAdapter.java
-C:\Users\user\Desktop\first tranfer\controle plafond\afb-infrastructure\src\main\java\com\afb\infrastructure\statistiques\adapter\out\persistence\StatistiquesJpaRepository.java
+C:\Users\user\Desktop\first tranfer\controle plafond\afb-infrastructure\src\main\java\com\afb\infrastructure\statistique\adapter\in\web\StatistiquesController.java
+C:\Users\user\Desktop\first tranfer\controle plafond\afb-infrastructure\src\main\java\com\afb\infrastructure\statistique\adapter\out\persistence\StatistiquesAdapter.java
+C:\Users\user\Desktop\first tranfer\controle plafond\afb-infrastructure\src\main\java\com\afb\infrastructure\statistique\adapter\out\persistence\StatistiquesJpaRepository.java
 C:\Users\user\Desktop\first tranfer\controle plafond\afb-infrastructure\src\main\java\com\afb\infrastructure\transfert\adapter\in\web\TransfertController.java
 C:\Users\user\Desktop\first tranfer\controle plafond\afb-infrastructure\src\main\java\com\afb\infrastructure\transfert\adapter\in\web\TransfertExceptionHandler.java
 C:\Users\user\Desktop\first tranfer\controle plafond\afb-infrastructure\src\main\java\com\afb\infrastructure\transfert\adapter\out\config\PlafondAdapter.java

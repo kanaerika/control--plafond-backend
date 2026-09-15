@@ -20,6 +20,12 @@
       car ce module ne produit pas d'exécutable, juste un jar de classes.
     -->
     <dependencies>
+        <!-- Portée test uniquement : n'entre pas dans le jar, la règle d'or tient. -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

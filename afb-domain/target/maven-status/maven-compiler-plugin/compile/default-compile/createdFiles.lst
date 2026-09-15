@@ -1,6 +1,7 @@
 com\afb\domain\partenaire\exception\NomPartenaireDejaUtilise.class
 com\afb\domain\transfert\exception\StatutTransfertInvalide.class
 com\afb\domain\configuration\port\out\ConfigurationRepositoryPort.class
+com\afb\domain\partenaire\exception\AccesReserveAfriland.class
 com\afb\domain\partenaire\exception\PartenaireNonTrouve.class
 com\afb\domain\transfert\model\ValidationMotif.class
 com\afb\domain\invitation\port\out\InvitationTokenPort.class
@@ -8,12 +9,14 @@ com\afb\domain\transfert\model\ValidationPiece.class
 com\afb\domain\invitation\exception\InvitationInvalide.class
 com\afb\domain\invitation\model\Invitation.class
 com\afb\domain\transfert\port\out\CompteurJournalierPort.class
+com\afb\domain\transfert\model\ValidationTransfert.class
 com\afb\domain\agent\exception\ServiceInvitationIndisponible.class
 com\afb\domain\partenaire\model\Partenaire.class
 com\afb\domain\invitation\model\Jeton.class
 com\afb\domain\agent\exception\AgentAvecHistorique.class
 com\afb\domain\invitation\port\out\EmailPort.class
 com\afb\domain\transfert\port\out\TransfertRepositoryPort.class
+com\afb\domain\partenaire\exception\PartenaireAvecHistorique.class
 com\afb\domain\configuration\model\Configuration.class
 com\afb\domain\agent\exception\EmailAgentDejaUtilise.class
 com\afb\domain\transfert\model\CompteursDuJour.class
@@ -28,6 +31,8 @@ com\afb\domain\transfert\exception\TransfertNonCloturable.class
 com\afb\domain\transfert\model\ResultatVerification.class
 com\afb\domain\transfert\model\StatutTransfert.class
 com\afb\domain\transfert\port\out\PlafondPort.class
+com\afb\domain\statistique\port\out\StatistiquesPort.class
+com\afb\domain\statistique\port\out\UtilisateurCourantPort.class
 com\afb\domain\partenaire\port\out\PartenaireRepositoryPort.class
 com\afb\domain\agent\port\out\AgentRepositoryPort.class
 com\afb\domain\transfert\exception\TransfertIntrouvable.class

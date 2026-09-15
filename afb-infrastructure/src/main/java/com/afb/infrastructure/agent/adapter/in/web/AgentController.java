@@ -3,13 +3,20 @@ package com.afb.infrastructure.agent.adapter.in.web;
 import com.afb.application.agent.port.in.AgentResultat;
 import com.afb.application.agent.port.in.GererAgentsUseCase;
 import com.afb.application.agent.port.in.ModifierAgentCommande;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Gestion des agents : réservée aux administrateurs. Sans cette restriction, un
+ * agent pouvait créer, suspendre ou supprimer ses collègues — le service ne
+ * vérifie que l'appartenance au même partenaire, pas le rôle de l'appelant.
+ */
 @RestController
 @RequestMapping("/api/v1/agents")
+@PreAuthorize("hasRole('ADMIN')")
 public class AgentController {
 
     private final GererAgentsUseCase gererAgents;

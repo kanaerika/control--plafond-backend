@@ -27,4 +27,12 @@ public interface InvitationPort {
      * Appelé après validation du jeton d'activation.
      */
     void definirMotDePasse(String email, String motDePasse);
+
+    /**
+     * Supprime le compte d'authentification associé à cet email. Appelé quand
+     * l'agent est supprimé côté application : sinon l'adresse resterait prise
+     * dans Keycloak et toute recréation échouerait en « email déjà utilisé ».
+     * N'agit qu'une fois la transaction en cours validée.
+     */
+    void supprimerCompte(String email);
 }

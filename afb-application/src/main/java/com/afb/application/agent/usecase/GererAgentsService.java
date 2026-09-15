@@ -60,6 +60,9 @@ public class GererAgentsService implements GererAgentsUseCase {
     public String supprimer(Long id) {
         Agent agent = chargerDansMonPartenaire(id);
         agents.supprimer(agent);
+        // Sans quoi l'adresse resterait prise dans Keycloak : recréer un agent
+        // avec le même email échouerait en « email déjà utilisé ».
+        invitations.supprimerCompte(agent.getEmail());
         return "Agent supprimé.";
     }
 

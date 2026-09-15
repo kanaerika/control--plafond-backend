@@ -7,6 +7,7 @@ import com.afb.domain.transfert.model.ResultatVerification;
 import com.afb.domain.transfert.model.StatutTransfert;
 import com.afb.domain.transfert.model.Transfert;
 import com.afb.domain.transfert.model.ValidationPiece;
+import com.afb.domain.transfert.model.ValidationTransfert;
 import com.afb.domain.transfert.port.out.CompteurJournalierPort;
 import com.afb.domain.transfert.port.out.PlafondPort;
 import com.afb.domain.transfert.port.out.TransfertRepositoryPort;
@@ -40,10 +41,12 @@ public class VerifierTransfertService implements VerifierTransfertUseCase {
     @Transactional
     public VerificationResultat verifier(VerificationCommande cmd) {
         String nomClient = normaliser(cmd.nomClient());
+        ValidationTransfert.valider(nomClient, cmd.montant(), cmd.paysDestination());
+        String dateNaissance = ValidationTransfert.normaliserDateNaissance(cmd.dateNaissance());
         ValidationPiece.valider(cmd.naturePiece(), cmd.numeroPiece());
 
         long plafond = plafondPort.plafondMensuel();
-        long cumul = cumulDuMois(nomClient, cmd.numeroPiece(), cmd.dateNaissance());
+        long cumul = cumulDuMois(nomClient, cmd.numeroPiece(), dateNaissance);
 
         ResultatVerification r = ResultatVerification.calculer(cumul, cmd.montant(), plafond);
 
@@ -52,10 +55,10 @@ public class VerifierTransfertService implements VerifierTransfertUseCase {
             String motif = String.format(Locale.FRENCH,
                     "Plafond dépassé : cumul %,d + montant %,d dépasse le plafond %,d FCFA.",
                     cumul, cmd.montant(), plafond);
-            enregistrer(cmd, nomClient, cumul, StatutTransfert.REFUSE_PLAFOND, motif, "R");
+            enregistrer(cmd, nomClient, dateNaissance, cumul, StatutTransfert.REFUSE_PLAFOND, motif, "R");
             if (cmd.agentId() != null) compteurs.incrementerRejetes(cmd.agentId());
         } else {
-            Transfert reserve = enregistrer(cmd, nomClient, cumul, StatutTransfert.NON_CLOTURE, null, "N");
+            Transfert reserve = enregistrer(cmd, nomClient, dateNaissance, cumul, StatutTransfert.NON_CLOTURE, null, "N");
             transfertId = reserve.getId();
             if (cmd.agentId() != null) compteurs.incrementerNonClotures(cmd.agentId());
         }
@@ -69,11 +72,11 @@ public class VerifierTransfertService implements VerifierTransfertUseCase {
                 r.montant(), r.restant(), r.pourcentageUtilise(), r.pourcentageApres(), transfertId);
     }
 
-    private Transfert enregistrer(VerificationCommande cmd, String nomClient, long cumul,
+    private Transfert enregistrer(VerificationCommande cmd, String nomClient, String dateNaissance, long cumul,
                                   StatutTransfert statut, String motif, String prefixeRef) {
         Transfert t = new Transfert();
         t.setNomClient(nomClient);
-        t.setDateNaissance(cmd.dateNaissance().trim());
+        t.setDateNaissance(dateNaissance);
         t.setNaturePiece(cmd.naturePiece());
         t.setNumeroPiece(cmd.numeroPiece().trim());
         t.setMontant(cmd.montant());

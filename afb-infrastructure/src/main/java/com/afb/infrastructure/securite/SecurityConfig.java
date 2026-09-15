@@ -1,10 +1,18 @@
 package com.afb.infrastructure.securite;
 
+import com.afb.domain.agent.port.out.AgentRepositoryPort;
+import com.afb.domain.partenaire.port.out.PartenaireRepositoryPort;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -21,10 +29,23 @@ import java.util.List;
 public class SecurityConfig {
 
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain filterChain(HttpSecurity http, AgentRepositoryPort agents,
+                                    PartenaireRepositoryPort partenaires, ObjectMapper json) throws Exception {
         http
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .csrf(csrf -> csrf.disable())
+            // Après la validation du JWT : le filtre a besoin de l'identité, et
+            // refuse les comptes ou partenaires désactivés depuis l'émission du jeton.
+            .addFilterAfter(new CompteActifFilter(agents, partenaires, json),
+                    BearerTokenAuthenticationFilter.class)
+            // Reprend le bean « corsConfigurationSource » ci-dessous. Pas d'injection par
+            // type : Spring MVC expose aussi un CorsConfigurationSource, d'où une ambiguïté.
+            .cors(Customizer.withDefaults())
+            // Revue Sonar S4502 — protection CSRF désactivée À DESSEIN, et sans risque ici :
+            // le CSRF exploite un identifiant que le navigateur joint tout seul (cookie de
+            // session). Cette API est STATELESS et n'accepte que le JWT porté par l'en-tête
+            // Authorization, ajouté explicitement par le front : un site tiers ne peut pas
+            // le forger. Aucun cookie d'authentification n'est émis ni lu.
+            // Si une authentification par cookie est un jour introduite, réactiver le CSRF.
+            .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 // Activation de compte : l'invité arrive depuis son email, il n'a
@@ -40,15 +61,25 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * CORS au plus juste (Sonar S5122) :
+     *  - une seule origine, celle du front, lue depuis la configuration — elle
+     *    n'était écrite en dur qu'en « localhost », ce qui ne vaut rien en production ;
+     *  - les seuls en-têtes réellement envoyés, au lieu de « * » ;
+     *  - pas de credentials : le jeton voyage dans l'en-tête Authorization, jamais
+     *    dans un cookie. Autoriser les credentials n'élargissait que la surface d'attaque.
+     */
     @Bean
-    CorsConfigurationSource corsConfigurationSource() {
+    CorsConfigurationSource corsConfigurationSource(@Value("${app.frontend-url}") String origineFront) {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:4200"));
+        config.setAllowedOrigins(List.of(origineFront.replaceAll("/+$", "")));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
-        config.setAllowCredentials(true);
+        config.setAllowedHeaders(List.of(HttpHeaders.AUTHORIZATION, HttpHeaders.CONTENT_TYPE,
+                HttpHeaders.ACCEPT));
+        config.setAllowCredentials(false);
+        config.setMaxAge(3600L);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
+        source.registerCorsConfiguration("/api/**", config);
         return source;
     }
 }

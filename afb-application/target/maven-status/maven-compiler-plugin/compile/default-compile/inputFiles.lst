@@ -13,11 +13,9 @@ C:\Users\user\Desktop\first tranfer\controle plafond\afb-application\src\main\ja
 C:\Users\user\Desktop\first tranfer\controle plafond\afb-application\src\main\java\com\afb\application\partenaire\port\in\ModifierPartenaireCommande.java
 C:\Users\user\Desktop\first tranfer\controle plafond\afb-application\src\main\java\com\afb\application\partenaire\port\in\PartenaireResultat.java
 C:\Users\user\Desktop\first tranfer\controle plafond\afb-application\src\main\java\com\afb\application\partenaire\usecase\GererPartenairesService.java
-C:\Users\user\Desktop\first tranfer\controle plafond\afb-application\src\main\java\com\afb\application\statistiques\dto\StatistiquesResultat.java
-C:\Users\user\Desktop\first tranfer\controle plafond\afb-application\src\main\java\com\afb\application\statistiques\port\in\ConsulterStatistiquesUseCase.java
-C:\Users\user\Desktop\first tranfer\controle plafond\afb-application\src\main\java\com\afb\application\statistiques\port\out\StatistiquesPort.java
-C:\Users\user\Desktop\first tranfer\controle plafond\afb-application\src\main\java\com\afb\application\statistiques\port\UtilisateurCourantPort.java
-C:\Users\user\Desktop\first tranfer\controle plafond\afb-application\src\main\java\com\afb\application\statistiques\usecase\ConsulterStatistiquesService.java
+C:\Users\user\Desktop\first tranfer\controle plafond\afb-application\src\main\java\com\afb\application\statistique\dto\StatistiquesResultat.java
+C:\Users\user\Desktop\first tranfer\controle plafond\afb-application\src\main\java\com\afb\application\statistique\port\in\ConsulterStatistiquesUseCase.java
+C:\Users\user\Desktop\first tranfer\controle plafond\afb-application\src\main\java\com\afb\application\statistique\usecase\ConsulterStatistiquesService.java
 C:\Users\user\Desktop\first tranfer\controle plafond\afb-application\src\main\java\com\afb\application\transfert\port\in\AnnulerRejeterUseCase.java
 C:\Users\user\Desktop\first tranfer\controle plafond\afb-application\src\main\java\com\afb\application\transfert\port\in\BilanResultat.java
 C:\Users\user\Desktop\first tranfer\controle plafond\afb-application\src\main\java\com\afb\application\transfert\port\in\ClientConnuResultat.java

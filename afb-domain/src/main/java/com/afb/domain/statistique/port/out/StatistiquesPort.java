@@ -14,6 +14,8 @@ public interface StatistiquesPort {
     long compterParPartenaire(Long partenaireId);
     long compterParAgentEntreDates(Long agentId, LocalDate debut, LocalDate fin);
     long compterParAgentEtStatut(Long agentId, String statut);
+    long compterAgentsPartenaire(Long partenaireId);
+    long compterAgentsPlateforme();
 
     // Répartition par statut : lignes [statut, count]
     List<Object[]> repartitionParStatutPartenaire(Long partenaireId);

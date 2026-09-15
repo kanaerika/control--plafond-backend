@@ -39,6 +39,15 @@ public class StatistiquesAdapter implements StatistiquesPort {
         return repo.countByAgentIdAndStatut(agentId, StatutTransfert.valueOf(statut));
     }
 
+    /** Opérateurs uniquement : les administrateurs ne sont pas comptés comme agents. */
+    @Override public long compterAgentsPartenaire(Long partenaireId) {
+        return agents.countByPartenaireIdAndRole(partenaireId, "AGENT");
+    }
+
+    @Override public long compterAgentsPlateforme() {
+        return agents.countByRole("AGENT");
+    }
+
     @Override public List<Object[]> repartitionParStatutPartenaire(Long partenaireId) {
         return repo.repartitionParStatutPartenaire(partenaireId);
     }

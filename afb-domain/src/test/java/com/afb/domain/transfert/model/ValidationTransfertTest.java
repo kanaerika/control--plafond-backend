@@ -1,0 +1,58 @@
+package com.afb.domain.transfert.model;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+
+import java.time.LocalDate;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+class ValidationTransfertTest {
+
+    /**
+     * Le cumul mensuel compare la date comme du texte : si ces écritures ne
+     * donnaient pas la même valeur, un client pourrait dépasser son plafond en
+     * changeant simplement de séparateur.
+     */
+    @ParameterizedTest
+    @ValueSource(strings = {"15-01-1990", "15/01/1990", "15.01.1990", "1990-01-15", "  15-01-1990 "})
+    void toutesLesEcrituresDUneMemeDateDonnentLaMemeValeur(String saisie) {
+        assertEquals("15-01-1990", ValidationTransfert.normaliserDateNaissance(saisie));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"31-02-1990", "00-01-1990", "15-13-1990", "hier", "1990", "15011990"})
+    void dateInvalideRefusee(String saisie) {
+        assertThrows(IllegalArgumentException.class,
+                () -> ValidationTransfert.normaliserDateNaissance(saisie));
+    }
+
+    @Test
+    void dateAbsenteOuFutureRefusee() {
+        assertThrows(IllegalArgumentException.class, () -> ValidationTransfert.normaliserDateNaissance(null));
+        assertThrows(IllegalArgumentException.class, () -> ValidationTransfert.normaliserDateNaissance(" "));
+        String demain = LocalDate.now().plusDays(1).toString();
+        assertThrows(IllegalArgumentException.class, () -> ValidationTransfert.normaliserDateNaissance(demain));
+    }
+
+    @ParameterizedTest
+    @ValueSource(longs = {0, -1, -150_000})
+    void montantNulOuNegatifRefuse(long montant) {
+        assertThrows(IllegalArgumentException.class,
+                () -> ValidationTransfert.valider("CLIENT", montant, "France"));
+    }
+
+    @Test
+    void nomEtPaysObligatoires() {
+        assertThrows(IllegalArgumentException.class, () -> ValidationTransfert.valider(" ", 1000, "France"));
+        assertThrows(IllegalArgumentException.class, () -> ValidationTransfert.valider(null, 1000, "France"));
+        assertThrows(IllegalArgumentException.class, () -> ValidationTransfert.valider("CLIENT", 1000, ""));
+    }
+
+    @Test
+    void saisieCorrecteAcceptee() {
+        ValidationTransfert.valider("CLIENT", 1, "France");
+    }
+}

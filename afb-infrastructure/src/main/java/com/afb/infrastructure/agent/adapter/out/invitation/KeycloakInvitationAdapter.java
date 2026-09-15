@@ -1,6 +1,5 @@
 package com.afb.infrastructure.agent.adapter.out.invitation;
 
-import com.afb.domain.agent.exception.EmailAgentDejaUtilise;
 import com.afb.domain.agent.exception.ServiceInvitationIndisponible;
 import com.afb.domain.agent.model.Agent;
 import com.afb.domain.agent.port.out.InvitationPort;
@@ -17,6 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.List;
 
@@ -70,44 +71,15 @@ public class KeycloakInvitationAdapter implements InvitationPort {
     @Override
     public String creerEtInviter(Agent agent, String role) {
         String userId;
-        try (Keycloak kc = keycloak()) {
-            RealmResource realmResource = kc.realm(realm);
-            UsersResource users = realmResource.users();
-
-            UserRepresentation user = new UserRepresentation();
-            user.setUsername(agent.getEmail());
-            user.setEmail(agent.getEmail());
-            appliquerNom(user, agent.getNomComplet());
-            user.setEnabled(true);
-            // L'adresse est réputée vérifiée par le lien d'invitation lui-même, et
-            // aucune action obligatoire n'est posée : sans cela Keycloak réclamerait
-            // à la connexion un formulaire de profil en anglais.
-            user.setEmailVerified(true);
-            user.setRequiredActions(List.of());
-
-            Response response = users.create(user);
-            int status = response.getStatus();
-            if (status == 409) {
-                throw new EmailAgentDejaUtilise(agent.getEmail());
-            }
-            if (status != 201) {
-                log.warn("Provisioning Keycloak ignoré pour {} : HTTP {}. "
-                        + "L'agent est enregistré côté application sans compte Keycloak ; "
-                        + "renvoyez l'invitation une fois le client de service configuré "
-                        + "(voir KEYCLOAK_SETUP.md).", agent.getEmail(), status);
-                return null;
-            }
-            userId = extraireId(response);
-
-            RoleRepresentation r = realmResource.roles().get(role).toRepresentation();
-            users.get(userId).roles().realmLevel().add(List.of(r));
-        } catch (EmailAgentDejaUtilise e) {
-            throw e;
+        try {
+            userId = provisionner(agent.getEmail(), agent.getNomComplet(), role);
         } catch (RuntimeException e) {
+            // Pas d'email dans ce cas : le lien échouerait à l'activation faute de
+            // compte. « Renvoyer l'invitation » recrée le compte puis envoie le lien.
             log.warn("Provisioning Keycloak indisponible pour {} ({}). "
                     + "L'agent est enregistré côté application sans compte Keycloak ; "
-                    + "renvoyez l'invitation une fois le client de service configuré "
-                    + "(voir KEYCLOAK_SETUP.md).", agent.getEmail(), e.getMessage());
+                    + "renvoyez l'invitation une fois le service rétabli.",
+                    agent.getEmail(), e.getMessage());
             return null;
         }
 
@@ -126,14 +98,109 @@ public class KeycloakInvitationAdapter implements InvitationPort {
         return userId;
     }
 
+    /**
+     * Garantit le compte avant d'envoyer le lien : c'est précisément le bouton
+     * qui sert à rattraper une création faite pendant une panne de Keycloak.
+     */
     @Override
     public void renvoyerInvitation(String email, String nomComplet, String role) {
+        provisionnerOuSignaler(email, nomComplet, role);
         invitations.emettre(email, nomComplet, role, true);
     }
 
     @Override
     public void reinitialiserMotDePasse(String email, String nomComplet, String role) {
+        provisionnerOuSignaler(email, nomComplet, role);
         invitations.emettre(email, nomComplet, role, true);
+    }
+
+    @Override
+    public void supprimerCompte(String email) {
+        Runnable suppression = () -> {
+            try (Keycloak kc = keycloak()) {
+                UsersResource users = kc.realm(realm).users();
+                users.searchByEmail(email, true).forEach(u -> users.delete(u.getId()));
+                log.info("Compte d'authentification supprimé pour {}", email);
+            } catch (RuntimeException e) {
+                // La suppression métier est déjà validée : on trace sans la défaire.
+                log.error("Compte Keycloak de {} non supprimé ({}) : l'adresse restera "
+                        + "réservée tant qu'il n'est pas retiré manuellement.",
+                        email, e.getMessage(), e);
+            }
+        };
+        // Après validation seulement : si la transaction échoue (agent avec
+        // historique, par exemple), l'agent existe toujours et doit garder son accès.
+        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    suppression.run();
+                }
+            });
+        } else {
+            suppression.run();
+        }
+    }
+
+    /**
+     * Crée le compte, ou reprend celui qui existe déjà pour cet email. L'appelant a
+     * vérifié qu'aucun agent applicatif ne porte l'adresse : un compte Keycloak
+     * existant est donc un reliquat (agent supprimé avant que la suppression ne se
+     * propage à Keycloak), qu'on remet en état au lieu de bloquer l'adresse à vie.
+     */
+    private String provisionner(String email, String nomComplet, String role) {
+        try (Keycloak kc = keycloak()) {
+            RealmResource realmResource = kc.realm(realm);
+            UsersResource users = realmResource.users();
+
+            UserRepresentation user = users.searchByEmail(email, true).stream().findFirst()
+                    .orElse(null);
+            String userId;
+            if (user == null) {
+                user = new UserRepresentation();
+                user.setUsername(email);
+                user.setEmail(email);
+                preparer(user, nomComplet);
+                Response response = users.create(user);
+                if (response.getStatus() != 201) {
+                    throw new IllegalStateException("création refusée (HTTP " + response.getStatus() + ")");
+                }
+                userId = extraireId(response);
+            } else {
+                userId = user.getId();
+                log.warn("Compte Keycloak existant repris pour {}", email);
+                preparer(user, nomComplet);
+                users.get(userId).update(user);
+            }
+
+            RoleRepresentation r = realmResource.roles().get(role).toRepresentation();
+            users.get(userId).roles().realmLevel().add(List.of(r));
+            return userId;
+        }
+    }
+
+    private void provisionnerOuSignaler(String email, String nomComplet, String role) {
+        try {
+            provisionner(email, nomComplet, role);
+        } catch (RuntimeException e) {
+            log.error("Provisioning Keycloak impossible pour {}", email, e);
+            throw new ServiceInvitationIndisponible(
+                    "Le service d'authentification (Keycloak) est momentanément indisponible "
+                    + "ou n'est pas encore configuré. Réessayez plus tard ou contactez votre "
+                    + "administrateur technique.", e);
+        }
+    }
+
+    /**
+     * Compte actif, adresse réputée vérifiée (le lien d'invitation en fait foi) et
+     * aucune action obligatoire : sans cela Keycloak réclamerait à la connexion un
+     * formulaire de profil en anglais.
+     */
+    private static void preparer(UserRepresentation user, String nomComplet) {
+        appliquerNom(user, nomComplet);
+        user.setEnabled(true);
+        user.setEmailVerified(true);
+        user.setRequiredActions(List.of());
     }
 
     @Override

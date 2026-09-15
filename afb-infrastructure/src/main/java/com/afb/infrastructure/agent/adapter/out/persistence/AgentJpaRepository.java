@@ -7,4 +7,6 @@ public interface AgentJpaRepository extends JpaRepository<AgentJpaEntity, Long> 
     boolean existsByEmailIgnoreCase(String email);
     java.util.Optional<AgentJpaEntity> findByEmailIgnoreCase(String email);
     List<AgentJpaEntity> findByPartenaireIdOrderByNomComplet(Long partenaireId);
+    long countByPartenaireIdAndRole(Long partenaireId, String role);
+    long countByRole(String role);
 }

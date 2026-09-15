@@ -16,10 +16,14 @@ C:\Users\user\Desktop\first tranfer\controle plafond\afb-domain\src\main\java\co
 C:\Users\user\Desktop\first tranfer\controle plafond\afb-domain\src\main\java\com\afb\domain\invitation\model\Jeton.java
 C:\Users\user\Desktop\first tranfer\controle plafond\afb-domain\src\main\java\com\afb\domain\invitation\port\out\EmailPort.java
 C:\Users\user\Desktop\first tranfer\controle plafond\afb-domain\src\main\java\com\afb\domain\invitation\port\out\InvitationTokenPort.java
+C:\Users\user\Desktop\first tranfer\controle plafond\afb-domain\src\main\java\com\afb\domain\partenaire\exception\AccesReserveAfriland.java
 C:\Users\user\Desktop\first tranfer\controle plafond\afb-domain\src\main\java\com\afb\domain\partenaire\exception\NomPartenaireDejaUtilise.java
+C:\Users\user\Desktop\first tranfer\controle plafond\afb-domain\src\main\java\com\afb\domain\partenaire\exception\PartenaireAvecHistorique.java
 C:\Users\user\Desktop\first tranfer\controle plafond\afb-domain\src\main\java\com\afb\domain\partenaire\exception\PartenaireNonTrouve.java
 C:\Users\user\Desktop\first tranfer\controle plafond\afb-domain\src\main\java\com\afb\domain\partenaire\model\Partenaire.java
 C:\Users\user\Desktop\first tranfer\controle plafond\afb-domain\src\main\java\com\afb\domain\partenaire\port\out\PartenaireRepositoryPort.java
+C:\Users\user\Desktop\first tranfer\controle plafond\afb-domain\src\main\java\com\afb\domain\statistique\port\out\StatistiquesPort.java
+C:\Users\user\Desktop\first tranfer\controle plafond\afb-domain\src\main\java\com\afb\domain\statistique\port\out\UtilisateurCourantPort.java
 C:\Users\user\Desktop\first tranfer\controle plafond\afb-domain\src\main\java\com\afb\domain\transfert\exception\StatutTransfertInvalide.java
 C:\Users\user\Desktop\first tranfer\controle plafond\afb-domain\src\main\java\com\afb\domain\transfert\exception\TransfertHorsPartenaire.java
 C:\Users\user\Desktop\first tranfer\controle plafond\afb-domain\src\main\java\com\afb\domain\transfert\exception\TransfertIntrouvable.java
@@ -30,6 +34,7 @@ C:\Users\user\Desktop\first tranfer\controle plafond\afb-domain\src\main\java\co
 C:\Users\user\Desktop\first tranfer\controle plafond\afb-domain\src\main\java\com\afb\domain\transfert\model\Transfert.java
 C:\Users\user\Desktop\first tranfer\controle plafond\afb-domain\src\main\java\com\afb\domain\transfert\model\ValidationMotif.java
 C:\Users\user\Desktop\first tranfer\controle plafond\afb-domain\src\main\java\com\afb\domain\transfert\model\ValidationPiece.java
+C:\Users\user\Desktop\first tranfer\controle plafond\afb-domain\src\main\java\com\afb\domain\transfert\model\ValidationTransfert.java
 C:\Users\user\Desktop\first tranfer\controle plafond\afb-domain\src\main\java\com\afb\domain\transfert\port\out\CompteurJournalierPort.java
 C:\Users\user\Desktop\first tranfer\controle plafond\afb-domain\src\main\java\com\afb\domain\transfert\port\out\PlafondPort.java
 C:\Users\user\Desktop\first tranfer\controle plafond\afb-domain\src\main\java\com\afb\domain\transfert\port\out\TransfertRepositoryPort.java
