@@ -108,10 +108,15 @@ public class KeycloakInvitationAdapter implements InvitationPort {
         invitations.emettre(email, nomComplet, role, true);
     }
 
+    /**
+     * Réinitialiser le mot de passe, ici, c'est renvoyer un lien : la plateforme
+     * ne détient aucun mot de passe, l'agent pose le sien au bout du parcours
+     * d'activation ({@link #definirMotDePasse}). Les deux boutons déclenchent donc
+     * exactement le même envoi — d'où la délégation plutôt qu'un corps recopié.
+     */
     @Override
     public void reinitialiserMotDePasse(String email, String nomComplet, String role) {
-        provisionnerOuSignaler(email, nomComplet, role);
-        invitations.emettre(email, nomComplet, role, true);
+        renvoyerInvitation(email, nomComplet, role);
     }
 
     @Override

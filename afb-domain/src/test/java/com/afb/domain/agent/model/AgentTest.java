@@ -28,8 +28,13 @@ class AgentTest {
 
     @Test
     void nomEtEmailObligatoires() {
-        assertThrows(IllegalArgumentException.class, () -> Agent.builder().email("x@y.z").build());
-        assertThrows(IllegalArgumentException.class, () -> Agent.builder().nomComplet("X").build());
+        // Chaîne de construction montée hors du lambda : seul build() doit pouvoir
+        // lever, sans quoi le test passerait aussi si builder() ou email() échouait.
+        Agent.Builder sansNom = Agent.builder().email("x@y.z");
+        assertThrows(IllegalArgumentException.class, sansNom::build);
+
+        Agent.Builder sansEmail = Agent.builder().nomComplet("X");
+        assertThrows(IllegalArgumentException.class, sansEmail::build);
     }
 
     /** Chemin du rechargement depuis la base : aucun drapeau ne doit être perdu. */
