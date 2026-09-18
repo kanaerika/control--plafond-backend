@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.function.Consumer;
-import com.afb.domain.transfert.model.CompteursDuJour;
+
 @Component
 public class CompteurJournalierAdapter implements CompteurJournalierPort {
 

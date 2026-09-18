@@ -1,5 +1,6 @@
 package com.afb.infrastructure.securite;
 
+import com.afb.commons.Urls;
 import com.afb.domain.agent.port.out.AgentRepositoryPort;
 import com.afb.domain.partenaire.port.out.PartenaireRepositoryPort;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -78,7 +79,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource(@Value("${app.frontend-url}") String origineFront) {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of(origineFront.replaceAll("/+$", "")));
+        config.setAllowedOrigins(List.of(Urls.sansSlashFinal(origineFront)));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of(HttpHeaders.AUTHORIZATION, HttpHeaders.CONTENT_TYPE,
                 HttpHeaders.ACCEPT));

@@ -1,5 +1,6 @@
 package com.afb.domain.transfert.model;
 
+import java.time.Clock;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -71,7 +72,7 @@ public final class ValidationTransfert {
         } catch (DateTimeException e) {
             throw new IllegalArgumentException("Date de naissance invalide : « " + s + " » n'existe pas.");
         }
-        if (date.isAfter(LocalDate.now())) {
+        if (date.isAfter(LocalDate.now(Clock.systemDefaultZone()))) {
             throw new IllegalArgumentException("La date de naissance ne peut pas être dans le futur.");
         }
         return date.format(FORMAT_CANONIQUE);

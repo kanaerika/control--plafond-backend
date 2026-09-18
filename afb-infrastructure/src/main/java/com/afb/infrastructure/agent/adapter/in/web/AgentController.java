@@ -19,6 +19,9 @@ import java.util.Map;
 @PreAuthorize("hasRole('ADMIN')")
 public class AgentController {
 
+    /** Clé de la réponse JSON attendue par le front pour les actions sans corps. */
+    private static final String CLE_MESSAGE = "message";
+
     private final GererAgentsUseCase gererAgents;
 
     public AgentController(GererAgentsUseCase gererAgents) {
@@ -44,17 +47,17 @@ public class AgentController {
 
     @DeleteMapping("/{id}")
     public Map<String, String> supprimer(@PathVariable Long id) {
-        return Map.of("message", gererAgents.supprimer(id));
+        return Map.of(CLE_MESSAGE, gererAgents.supprimer(id));
     }
 
     @PostMapping("/{id}/invitation")
     public Map<String, String> renvoyerInvitation(@PathVariable Long id) {
-        return Map.of("message", gererAgents.renvoyerInvitation(id));
+        return Map.of(CLE_MESSAGE, gererAgents.renvoyerInvitation(id));
     }
 
     @PostMapping("/{id}/reinitialisation")
     public Map<String, String> reinitialiser(@PathVariable Long id) {
-        return Map.of("message", gererAgents.reinitialiser(id));
+        return Map.of(CLE_MESSAGE, gererAgents.reinitialiser(id));
     }
 
     @PostMapping

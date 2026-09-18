@@ -7,6 +7,7 @@ import com.afb.domain.statistique.port.out.UtilisateurCourantPort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.format.TextStyle;
 import java.util.*;
@@ -19,6 +20,11 @@ import java.util.*;
  */
 @Service
 public class ConsulterStatistiquesService implements ConsulterStatistiquesUseCase {
+
+    /** Libellés de variante lus par dashboard.component.ts : ne pas renommer. */
+    private static final String KPI_PRINCIPAL = "principal";
+    private static final String KPI_INFO = "info";
+    private static final String STATUT_REFUSE_PLAFOND = "REFUSE_PLAFOND";
 
     private static final String C_VERT = "#128C4A";
     private static final String C_ROUGE = "#C8102E";
@@ -54,9 +60,9 @@ public class ConsulterStatistiquesService implements ConsulterStatistiquesUseCas
         // Libellés lus tels quels par le tableau de bord : ne pas les renommer
         // sans modifier dashboard.component.ts.
         List<Kpi> kpis = List.of(
-                new Kpi("Agents", stats.compterAgentsPartenaire(pid), "info"),
-                new Kpi("Transferts", total(parStatut), "principal"),
-                new Kpi("Bloqués", compte(parStatut, "REFUSE_PLAFOND"), "attention")
+                new Kpi("Agents", stats.compterAgentsPartenaire(pid), KPI_INFO),
+                new Kpi("Transferts", total(parStatut), KPI_PRINCIPAL),
+                new Kpi("Bloqués", compte(parStatut, STATUT_REFUSE_PLAFOND), "attention")
         );
         return new Reponse("PARTENAIRE", kpis,
                 repartition(parStatut),
@@ -67,7 +73,7 @@ public class ConsulterStatistiquesService implements ConsulterStatistiquesUseCas
 
     private Reponse agent() {
         Long aid = utilisateur.agentIdCourant();
-        LocalDate auj = LocalDate.now();
+        LocalDate auj = LocalDate.now(Clock.systemDefaultZone());
 
         long jour = stats.compterParAgentEntreDates(aid, auj, auj);
         long semaine = stats.compterParAgentEntreDates(aid, auj.minusDays(6), auj);
@@ -75,10 +81,10 @@ public class ConsulterStatistiquesService implements ConsulterStatistiquesUseCas
         long executes = stats.compterParAgentEtStatut(aid, "EXECUTE");
 
         List<Kpi> kpis = List.of(
-                new Kpi("Aujourd'hui", jour, "principal"),
-                new Kpi("Cette semaine", semaine, "info"),
+                new Kpi("Aujourd'hui", jour, KPI_PRINCIPAL),
+                new Kpi("Cette semaine", semaine, KPI_INFO),
                 new Kpi("Ce mois", mois, "succes"),
-                new Kpi("Total exécutés", executes, "principal")
+                new Kpi("Total exécutés", executes, KPI_PRINCIPAL)
         );
         return new Reponse("AGENT", kpis,
                 repartition(stats.repartitionParStatutAgent(aid)),
@@ -92,9 +98,9 @@ public class ConsulterStatistiquesService implements ConsulterStatistiquesUseCas
         // Laissée vide, cette liste affichait trois cartes sans chiffre sur le
         // tableau de bord d'Afriland.
         List<Kpi> kpis = List.of(
-                new Kpi("Agents", stats.compterAgentsPlateforme(), "info"),
-                new Kpi("Transferts", total(parStatut), "principal"),
-                new Kpi("Bloqués", compte(parStatut, "REFUSE_PLAFOND"), "attention")
+                new Kpi("Agents", stats.compterAgentsPlateforme(), KPI_INFO),
+                new Kpi("Transferts", total(parStatut), KPI_PRINCIPAL),
+                new Kpi("Bloqués", compte(parStatut, STATUT_REFUSE_PLAFOND), "attention")
         );
         return new Reponse("PLATEFORME", kpis,
                 repartition(parStatut),
@@ -106,7 +112,7 @@ public class ConsulterStatistiquesService implements ConsulterStatistiquesUseCas
     // ---------- Helpers (identiques à l'ancien) ----------
 
     private LocalDate douzeMoisAvant() {
-        return LocalDate.now().minusMonths(11).withDayOfMonth(1);
+        return LocalDate.now(Clock.systemDefaultZone()).minusMonths(11).withDayOfMonth(1);
     }
 
     private List<Part> repartition(List<Object[]> lignes) {
@@ -122,7 +128,7 @@ public class ConsulterStatistiquesService implements ConsulterStatistiquesUseCas
         parts.add(new Part("En cours", map.getOrDefault("EN_COURS", 0L), C_BLEU));
         parts.add(new Part("Annulés", map.getOrDefault("ANNULE", 0L), C_ORANGE));
         parts.add(new Part("Rejetés", map.getOrDefault("REJETE", 0L), C_ROUGE));
-        parts.add(new Part("Refusés (plafond)", map.getOrDefault("REFUSE_PLAFOND", 0L), C_GRIS));
+        parts.add(new Part("Refusés (plafond)", map.getOrDefault(STATUT_REFUSE_PLAFOND, 0L), C_GRIS));
         return parts;
     }
 

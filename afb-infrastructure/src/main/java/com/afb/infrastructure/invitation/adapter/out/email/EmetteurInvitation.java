@@ -1,5 +1,6 @@
 package com.afb.infrastructure.invitation.adapter.out.email;
 
+import com.afb.commons.Urls;
 import com.afb.domain.invitation.model.Invitation;
 import com.afb.domain.invitation.model.Jeton;
 import com.afb.domain.invitation.port.out.EmailPort;
@@ -38,7 +39,7 @@ public class EmetteurInvitation {
         String token = Jeton.generer();
         jetons.enregistrer(Invitation.emettre(Jeton.empreinte(token), email, Instant.now()));
 
-        String lien = urlFrontend.replaceAll("/+$", "")
+        String lien = Urls.sansSlashFinal(urlFrontend)
                 + "/invitation?token=" + URLEncoder.encode(token, StandardCharsets.UTF_8);
         emails.envoyerInvitation(email, nomComplet, lien, role, renvoi);
     }

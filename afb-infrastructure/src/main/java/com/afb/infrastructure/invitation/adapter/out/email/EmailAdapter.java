@@ -85,15 +85,24 @@ public class EmailAdapter implements EmailPort {
         return "ADMIN".equalsIgnoreCase(role) ? ADMIN : AGENT;
     }
 
+    /**
+     * Objet du mail. Un renvoi annonce le nouveau lien ; une première invitation
+     * annonce l'espace correspondant au rôle.
+     */
+    private static String objet(String role, boolean renvoi) {
+        if (renvoi) {
+            return "Votre nouveau lien d'accès à la plateforme de transferts";
+        }
+        return "ADMIN".equalsIgnoreCase(role)
+                ? "Votre espace administrateur sur la plateforme Afriland First Bank"
+                : "Votre accès agent à la plateforme de transferts Afriland First Bank";
+    }
+
     @Override
     public void envoyerInvitation(String destinataire, String nomComplet, String lien,
                                   String role, boolean renvoi) {
         Presentation quoi = presentation(role);
-        String objet = renvoi
-                ? "Votre nouveau lien d'accès à la plateforme de transferts"
-                : ("ADMIN".equalsIgnoreCase(role)
-                    ? "Votre espace administrateur sur la plateforme Afriland First Bank"
-                    : "Votre accès agent à la plateforme de transferts Afriland First Bank");
+        String objet = objet(role, renvoi);
         try {
             MimeMessage message = expediteur.createMimeMessage();
             // Multipart obligatoire pour porter les deux versions du corps

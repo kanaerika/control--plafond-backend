@@ -51,6 +51,7 @@ com\afb\infrastructure\invitation\adapter\out\email\EmailAdapter.class
 com\afb\infrastructure\transfert\adapter\in\web\TransfertController$ClotureRequete.class
 com\afb\infrastructure\partenaire\adapter\in\web\PartenaireController.class
 com\afb\infrastructure\statistique\adapter\out\persistence\StatistiquesJpaRepository.class
+com\afb\infrastructure\transfert\adapter\in\web\ConsultationTransfertController.class
 com\afb\infrastructure\invitation\adapter\out\email\EmetteurInvitation.class
 com\afb\infrastructure\transfert\adapter\out\persistence\TransfertJpaEntity.class
 com\afb\infrastructure\transfert\adapter\in\web\TransfertExceptionHandler.class

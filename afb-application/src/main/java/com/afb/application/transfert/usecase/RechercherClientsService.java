@@ -3,7 +3,6 @@ package com.afb.application.transfert.usecase;
 import com.afb.application.transfert.port.in.ClientConnuResultat;
 import com.afb.application.transfert.port.in.RechercherClientsUseCase;
 import com.afb.domain.agent.port.out.AdminCourantPort;
-import com.afb.domain.transfert.model.Transfert;
 import com.afb.domain.transfert.port.out.TransfertRepositoryPort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

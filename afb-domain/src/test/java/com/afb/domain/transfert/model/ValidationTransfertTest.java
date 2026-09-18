@@ -4,12 +4,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.time.Clock;
 import java.time.LocalDate;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ValidationTransfertTest {
+
+    private static final String CLIENT = "CLIENT";
+    private static final String PAYS = "France";
 
     /**
      * Le cumul mensuel compare la date comme du texte : si ces écritures ne
@@ -33,7 +38,7 @@ class ValidationTransfertTest {
     void dateAbsenteOuFutureRefusee() {
         assertThrows(IllegalArgumentException.class, () -> ValidationTransfert.normaliserDateNaissance(null));
         assertThrows(IllegalArgumentException.class, () -> ValidationTransfert.normaliserDateNaissance(" "));
-        String demain = LocalDate.now().plusDays(1).toString();
+        String demain = LocalDate.now(Clock.systemDefaultZone()).plusDays(1).toString();
         assertThrows(IllegalArgumentException.class, () -> ValidationTransfert.normaliserDateNaissance(demain));
     }
 
@@ -41,18 +46,18 @@ class ValidationTransfertTest {
     @ValueSource(longs = {0, -1, -150_000})
     void montantNulOuNegatifRefuse(long montant) {
         assertThrows(IllegalArgumentException.class,
-                () -> ValidationTransfert.valider("CLIENT", montant, "France"));
+                () -> ValidationTransfert.valider(CLIENT, montant, PAYS));
     }
 
     @Test
     void nomEtPaysObligatoires() {
-        assertThrows(IllegalArgumentException.class, () -> ValidationTransfert.valider(" ", 1000, "France"));
-        assertThrows(IllegalArgumentException.class, () -> ValidationTransfert.valider(null, 1000, "France"));
-        assertThrows(IllegalArgumentException.class, () -> ValidationTransfert.valider("CLIENT", 1000, ""));
+        assertThrows(IllegalArgumentException.class, () -> ValidationTransfert.valider(" ", 1000, PAYS));
+        assertThrows(IllegalArgumentException.class, () -> ValidationTransfert.valider(null, 1000, PAYS));
+        assertThrows(IllegalArgumentException.class, () -> ValidationTransfert.valider(CLIENT, 1000, ""));
     }
 
     @Test
     void saisieCorrecteAcceptee() {
-        ValidationTransfert.valider("CLIENT", 1, "France");
+        assertDoesNotThrow(() -> ValidationTransfert.valider(CLIENT, 1, PAYS));
     }
 }
