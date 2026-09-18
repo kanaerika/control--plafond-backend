@@ -52,7 +52,9 @@ public class TransfertJpaEntity {
     @Column(name = "agent_id")
     private Long agentId;
 
-    public TransfertJpaEntity() {}
+    public TransfertJpaEntity() {
+        // Requis par JPA : Hibernate instancie l'entité par réflexion, puis hydrate ses champs.
+    }
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

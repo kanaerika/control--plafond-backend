@@ -17,7 +17,7 @@ import java.util.List;
 @Service
 public class GererAgentsService implements GererAgentsUseCase {
 
-    private static final String ROLE_AGENT = "AGENT";
+    private static final String ROLE_AGENT = Agent.ROLE_AGENT;
     private final com.afb.domain.agent.port.out.InvitationPort invitations;
 
     private final AgentRepositoryPort agents;

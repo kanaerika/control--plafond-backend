@@ -24,7 +24,9 @@ public final class ValidationTransfert {
     private static final Pattern JOUR_MOIS_ANNEE = Pattern.compile("(\\d{2})[-/.](\\d{2})[-/.](\\d{4})");
     private static final Pattern ANNEE_MOIS_JOUR = Pattern.compile("(\\d{4})-(\\d{2})-(\\d{2})");
 
-    private ValidationTransfert() {}
+    private ValidationTransfert() {
+        // Classe utilitaire à méthodes statiques : elle ne doit pas être instanciée.
+    }
 
     public static void valider(String nomClient, long montant, String paysDestination) {
         if (nomClient == null || nomClient.isBlank()) {

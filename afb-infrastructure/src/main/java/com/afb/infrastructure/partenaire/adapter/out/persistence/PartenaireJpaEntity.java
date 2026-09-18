@@ -19,7 +19,9 @@ public class PartenaireJpaEntity {
     @Column(nullable = false)
     private boolean actif = true;
 
-    public PartenaireJpaEntity() {}
+    public PartenaireJpaEntity() {
+        // Requis par JPA : Hibernate instancie l'entité par réflexion, puis hydrate ses champs.
+    }
 
     public PartenaireJpaEntity(Long id, String nom, String email, boolean actif) {
         this.id = id;

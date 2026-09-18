@@ -17,6 +17,7 @@ com\afb\domain\agent\exception\AgentAvecHistorique.class
 com\afb\domain\invitation\port\out\EmailPort.class
 com\afb\domain\transfert\port\out\TransfertRepositoryPort.class
 com\afb\domain\partenaire\exception\PartenaireAvecHistorique.class
+com\afb\domain\agent\model\Agent$Builder.class
 com\afb\domain\configuration\model\Configuration.class
 com\afb\domain\agent\exception\EmailAgentDejaUtilise.class
 com\afb\domain\transfert\model\CompteursDuJour.class

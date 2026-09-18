@@ -73,9 +73,12 @@ public class AgentPersistenceAdapter implements AgentRepositoryPort {
     }
 
     private static Agent versDomaine(AgentJpaEntity e) {
-        return new Agent(e.getId(), e.getNomComplet(), e.getEmail(), e.getRole(),
-                e.getPartenaireId(), e.getAgence(), e.getCodeAgent(), e.isActif(),
-                e.isInvitationAcceptee(), e.isFirstLogin());
+        return Agent.builder()
+                .id(e.getId()).nomComplet(e.getNomComplet()).email(e.getEmail()).role(e.getRole())
+                .partenaireId(e.getPartenaireId()).agence(e.getAgence()).codeAgent(e.getCodeAgent())
+                .actif(e.isActif()).invitationAcceptee(e.isInvitationAcceptee())
+                .firstLogin(e.isFirstLogin())
+                .build();
     }
 
     private static void appliquer(Agent a, AgentJpaEntity e) {

@@ -23,7 +23,9 @@ public class CompteurJournalierJpaEntity {
     private int annules;
     private int nonClotures;
 
-    public CompteurJournalierJpaEntity() {}
+    public CompteurJournalierJpaEntity() {
+        // Requis par JPA : Hibernate instancie l'entité par réflexion, puis hydrate ses champs.
+    }
 
     public CompteurJournalierJpaEntity(Long agentId, LocalDate jour) {
         this.agentId = agentId;

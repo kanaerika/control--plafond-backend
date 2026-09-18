@@ -28,7 +28,13 @@ import java.util.List;
 @EnableMethodSecurity
 public class SecurityConfig {
 
+    /**
+     * S4502 (CSRF désactivé) est revue et acceptée : voir la justification au
+     * niveau de {@code .csrf(...)}. La suppression vise cette seule règle — toute
+     * autre alerte Sonar sur cette méthode reste signalée.
+     */
     @Bean
+    @SuppressWarnings("java:S4502")
     SecurityFilterChain filterChain(HttpSecurity http, AgentRepositoryPort agents,
                                     PartenaireRepositoryPort partenaires, ObjectMapper json) throws Exception {
         http

@@ -29,7 +29,9 @@ public class InvitationJpaEntity {
     @Column(name = "utilisee_le")
     private Instant utiliseeLe;
 
-    protected InvitationJpaEntity() {}
+    protected InvitationJpaEntity() {
+        // Requis par JPA : Hibernate instancie l'entité par réflexion, puis hydrate ses champs.
+    }
 
     public Long getId() { return id; }
     public void setId(Long v) { this.id = v; }

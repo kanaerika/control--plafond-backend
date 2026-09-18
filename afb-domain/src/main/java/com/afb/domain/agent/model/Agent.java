@@ -4,13 +4,20 @@ import java.util.Objects;
 
 /**
  * Agent : utilisateur opérateur rattaché à un partenaire. Objet métier PUR.
+ *
+ * Construit via {@link #builder()} : l'ancien constructeur à dix paramètres
+ * obligeait les appelants à aligner des {@code null, null, true, false, true}
+ * dont l'ordre ne se relisait pas (Sonar S107).
  */
 public class Agent {
+
+    public static final String ROLE_AGENT = "AGENT";
+    public static final String ROLE_ADMIN = "ADMIN";
 
     private final Long id;
     private String nomComplet;
     private final String email;
-    private final String role;          // "AGENT" ou "ADMIN"
+    private final String role;
     private final Long partenaireId;    // rattachement (isolation)
     private String agence;
     private String codeAgent;
@@ -18,25 +25,38 @@ public class Agent {
     private final boolean invitationAcceptee;
     private final boolean firstLogin;
 
-    public Agent(Long id, String nomComplet, String email, String role, Long partenaireId,
-                 String agence, String codeAgent, boolean actif,
-                 boolean invitationAcceptee, boolean firstLogin) {
-        this.id = id;
-        this.nomComplet = exigerNonVide(nomComplet, "Le nom complet est obligatoire.");
-        this.email = exigerNonVide(email, "L'email est obligatoire.").trim().toLowerCase();
-        this.role = (role == null || role.isBlank()) ? "AGENT" : role;
-        this.partenaireId = partenaireId;
-        this.agence = agence;
-        this.codeAgent = codeAgent;
-        this.actif = actif;
-        this.invitationAcceptee = invitationAcceptee;
-        this.firstLogin = firstLogin;
+    private Agent(Builder b) {
+        this.id = b.id;
+        this.nomComplet = exigerNonVide(b.nomComplet, "Le nom complet est obligatoire.");
+        this.email = exigerNonVide(b.email, "L'email est obligatoire.").trim().toLowerCase();
+        this.role = (b.role == null || b.role.isBlank()) ? ROLE_AGENT : b.role;
+        this.partenaireId = b.partenaireId;
+        this.agence = b.agence;
+        this.codeAgent = b.codeAgent;
+        this.actif = b.actif;
+        this.invitationAcceptee = b.invitationAcceptee;
+        this.firstLogin = b.firstLogin;
+    }
+
+    /** Nouveau compte : actif, invitation pas encore acceptée, premier login à venir. */
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /** Copie modifiable d'un agent existant, pour n'en changer que quelques champs. */
+    public Builder copie() {
+        return new Builder()
+                .id(id).nomComplet(nomComplet).email(email).role(role)
+                .partenaireId(partenaireId).agence(agence).codeAgent(codeAgent)
+                .actif(actif).invitationAcceptee(invitationAcceptee).firstLogin(firstLogin);
     }
 
     public static Agent creer(String nomComplet, String email, Long partenaireId,
                               String agence, String codeAgent) {
-        return new Agent(null, nomComplet, email, "AGENT", partenaireId,
-                agence, codeAgent, true, false, true);
+        return builder()
+                .nomComplet(nomComplet).email(email).role(ROLE_AGENT)
+                .partenaireId(partenaireId).agence(agence).codeAgent(codeAgent)
+                .build();
     }
 
     public void modifier(String nouveauNom, String nouvelleAgence, String nouveauCode) {
@@ -47,8 +67,8 @@ public class Agent {
 
     public void basculerActivation() { this.actif = !this.actif; }
 
-    public boolean estAgent() { return "AGENT".equals(role); }
-    public boolean estAdmin() { return "ADMIN".equals(role); }
+    public boolean estAgent() { return ROLE_AGENT.equals(role); }
+    public boolean estAdmin() { return ROLE_ADMIN.equals(role); }
 
     public String statut() {
         if (!invitationAcceptee) return "Invitation en attente";
@@ -80,4 +100,39 @@ public class Agent {
 
     @Override
     public int hashCode() { return Objects.hashCode(id); }
+
+    /**
+     * Les valeurs par défaut sont celles d'un compte tout juste créé ; les règles
+     * (nom et email obligatoires, rôle AGENT par défaut) sont appliquées à la
+     * construction, quel que soit le chemin emprunté.
+     */
+    public static final class Builder {
+        private Long id;
+        private String nomComplet;
+        private String email;
+        private String role = ROLE_AGENT;
+        private Long partenaireId;
+        private String agence;
+        private String codeAgent;
+        private boolean actif = true;
+        private boolean invitationAcceptee = false;
+        private boolean firstLogin = true;
+
+        private Builder() {
+            // Instancié uniquement via Agent.builder() ou Agent#copie().
+        }
+
+        public Builder id(Long v) { this.id = v; return this; }
+        public Builder nomComplet(String v) { this.nomComplet = v; return this; }
+        public Builder email(String v) { this.email = v; return this; }
+        public Builder role(String v) { this.role = v; return this; }
+        public Builder partenaireId(Long v) { this.partenaireId = v; return this; }
+        public Builder agence(String v) { this.agence = v; return this; }
+        public Builder codeAgent(String v) { this.codeAgent = v; return this; }
+        public Builder actif(boolean v) { this.actif = v; return this; }
+        public Builder invitationAcceptee(boolean v) { this.invitationAcceptee = v; return this; }
+        public Builder firstLogin(boolean v) { this.firstLogin = v; return this; }
+
+        public Agent build() { return new Agent(this); }
+    }
 }

@@ -3,7 +3,9 @@ package com.afb.domain.transfert.model;
 /** Règles de validation d'une pièce d'identité (PUR). CNI ancienne=18 chiffres, nouvelle=2 lettres+8 chiffres. */
 public final class ValidationPiece {
 
-    private ValidationPiece() {}
+    private ValidationPiece() {
+        // Classe utilitaire à méthodes statiques : elle ne doit pas être instanciée.
+    }
 
     public static void valider(String nature, String numero) {
         String n = numero == null ? "" : numero.trim();

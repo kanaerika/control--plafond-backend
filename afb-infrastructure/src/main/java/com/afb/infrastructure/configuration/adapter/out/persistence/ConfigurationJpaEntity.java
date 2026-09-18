@@ -16,7 +16,9 @@ public class ConfigurationJpaEntity {
     private String modifiePar;
     private Instant modifieLe;
 
-    public ConfigurationJpaEntity() {}
+    public ConfigurationJpaEntity() {
+        // Requis par JPA : Hibernate instancie l'entité par réflexion, puis hydrate ses champs.
+    }
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

@@ -22,7 +22,10 @@ public class Transfert {
     private Long partenaireId;
     private Long agentId;
 
-    public Transfert() {}
+    public Transfert() {
+        // Construit champ par champ via les setters : à la vérification comme au
+        // rechargement depuis la persistance, les valeurs arrivent séparément.
+    }
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

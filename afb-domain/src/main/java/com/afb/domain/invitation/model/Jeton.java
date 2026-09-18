@@ -17,7 +17,9 @@ public final class Jeton {
     private static final SecureRandom ALEA = new SecureRandom();
     private static final int OCTETS = 32; // 256 bits
 
-    private Jeton() {}
+    private Jeton() {
+        // Classe utilitaire à méthodes statiques : elle ne doit pas être instanciée.
+    }
 
     /** Jeton en clair, sûr pour une URL. */
     public static String generer() {

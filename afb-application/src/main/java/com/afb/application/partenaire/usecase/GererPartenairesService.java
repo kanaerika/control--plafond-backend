@@ -83,9 +83,10 @@ public class GererPartenairesService implements GererPartenairesUseCase {
 
         // Le realm Keycloak ne connaît que ADMIN / AGENT ; la distinction
         // « admin Afriland » se fait sur le partenaire d'appartenance.
-        Agent admin = new Agent(null, nomAdmin, email, "ADMIN",
-                p.getId(), null, null, true, false, true);
-        invitations.creerEtInviter(admin, "ADMIN");
+        Agent admin = Agent.builder()
+                .nomComplet(nomAdmin).email(email).role(Agent.ROLE_ADMIN).partenaireId(p.getId())
+                .build();
+        invitations.creerEtInviter(admin, Agent.ROLE_ADMIN);
         agents.enregistrer(admin);
 
         return versResultat(p);
@@ -152,7 +153,7 @@ public class GererPartenairesService implements GererPartenairesUseCase {
         String nomAdmin = agents.trouverParEmail(partenaire.getEmail())
                 .map(Agent::getNomComplet)
                 .orElse(partenaire.getNom());
-        invitations.renvoyerInvitation(partenaire.getEmail(), nomAdmin, "ADMIN");
+        invitations.renvoyerInvitation(partenaire.getEmail(), nomAdmin, Agent.ROLE_ADMIN);
         return "Invitation renvoyée à l'administrateur de « " + partenaire.getNom() + " ».";
     }
 

@@ -33,9 +33,9 @@ public class ProfilController {
     @PutMapping
     public ProfilResponse modifier(@AuthenticationPrincipal Jwt jwt, @RequestBody ModifierRequete r) {
         Agent agent = trouverAgent(jwt);
-        Agent maj = new Agent(agent.getId(), r.nomComplet(), r.email(), agent.getRole(),
-                agent.getPartenaireId(), r.agence(), agent.getCodeAgent(), agent.isActif(),
-                agent.isInvitationAcceptee(), agent.isFirstLogin());
+        Agent maj = agent.copie()
+                .nomComplet(r.nomComplet()).email(r.email()).agence(r.agence())
+                .build();
         return versReponse(agents.enregistrer(maj));
     }
 
